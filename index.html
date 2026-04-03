@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestão com Login</title>
+</head>
+<body>
+
+<!-- 🔐 LOGIN -->
+<div id="login-screen" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:10px;">
+  <h2>Login</h2>
+  <input id="email" type="email" placeholder="Email" />
+  <input id="senha" type="password" placeholder="Senha" />
+  <button onclick="login()">Entrar</button>
+  <button onclick="cadastrar()">Criar Conta</button>
+</div>
+
+<!-- 🔓 APP -->
+<div id="app" style="display:none;">
+  <h1>Seu sistema carregado</h1>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+// 🔥 CONFIG FIREBASE (SUBSTITUIR)
+const firebaseConfig = {
+  apiKey: "SUA_API_KEY",
+  authDomain: "SEU_DOMINIO",
+  projectId: "SEU_PROJECT_ID",
+};
+
+const appFirebase = initializeApp(firebaseConfig);
+const auth = getAuth(appFirebase);
+
+// 🔐 CADASTRO
+window.cadastrar = function () {
+  const email = document.getElementById('email').value;
+  const senha = document.getElementById('senha').value;
+
+  createUserWithEmailAndPassword(auth, email, senha)
+    .then(() => alert("Conta criada!"))
+    .catch(err => alert(err.message));
+}
+
+// 🔐 LOGIN
+window.login = function () {
+  const email = document.getElementById('email').value;
+  const senha = document.getElementById('senha').value;
+
+  signInWithEmailAndPassword(auth, email, senha)
+    .then(() => {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+    })
+    .catch(err => alert(err.message));
+}
+
+// 🔄 MANTER LOGADO
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+  }
+});
+</script>
+
+</body>
+</html>
